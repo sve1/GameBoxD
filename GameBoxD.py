@@ -5,7 +5,7 @@ import os
 from datetime import datetime
 
 # ---------------- CONFIG ----------------
-RAWG_API_KEY = os.getenv("RAWG_API_KEY") or "SUA_API_KEY_AQUI"
+RAWG_API_KEY = os.getenv("RAWG_API_KEY") or "4193f734e2f1493cb033d60b1363edfe"
 BASE_URL = "https://api.rawg.io/api"
 DATA_FILE = "user_games.json"
 
