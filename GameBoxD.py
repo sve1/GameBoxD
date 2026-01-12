@@ -5,7 +5,7 @@ import os
 from datetime import datetime
 
 # ---------------- CONFIG ----------------
-RAWG_API_KEY = os.getenv("RAWG_API_KEY") or "4193f734e2f1493cb033d60b1363edfe"
+RAWG_API_KEY = os.getenv("RAWG_API_KEY") or "SUA_API_KEY_AQUI"
 BASE_URL = "https://api.rawg.io/api"
 DATA_FILE = "user_games.json"
 
@@ -42,14 +42,16 @@ def get_game_details(game_id):
 
 # ---------------- UI HELPERS ----------------
 
-def game_card(game):
-    st.markdown(f"<div style='border-radius:12px; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,0.15); text-align:center; margin-bottom:15px;'>"
-                f"<img src='{game.get('background_image')}' style='width:100%; height:200px; object-fit:cover;'/>"
-                f"<h4 style='margin:10px 0;'>{game['name']}</h4>"
-                f"</div>", unsafe_allow_html=True)
-    if st.button("Ver detalhes", key=f"btn_{game['id']}"):
+def game_card(game, idx):
+    st.markdown(
+        f"<div style='border-radius:12px; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,0.15); text-align:center; margin-bottom:15px;'>"
+        f"<img src='{game.get('background_image')}' style='width:100%; height:200px; object-fit:cover;'/>"
+        f"<h4 style='margin:10px 0;'>{game['name']}</h4>"
+        f"</div>",
+        unsafe_allow_html=True
+    )
+    if st.button("Ver detalhes", key=f"btn_{game['id']}_{idx}"):
         st.session_state["selected_game"] = game["id"]
-        st.experimental_rerun()
 
 # ---------------- SIDEBAR ----------------
 st.sidebar.title("🎮 GameBoxd")
@@ -66,9 +68,8 @@ if "selected_game" not in st.session_state:
 games = search_games(search)
 num_cols = 5
 cols = st.columns(num_cols)
-idx = 0
 
-for game in games:
+for idx, game in enumerate(games):
     game_id = str(game["id"])
     if filter_view != "Todos":
         if game_id not in user_data:
@@ -76,8 +77,7 @@ for game in games:
         if user_data[game_id].get("status") != filter_view:
             continue
     with cols[idx % num_cols]:
-        game_card(game)
-    idx += 1
+        game_card(game, idx)
 
 # ---------------- GAME DETAILS ----------------
 if st.session_state.get("selected_game"):
@@ -111,7 +111,6 @@ if st.session_state.get("selected_game"):
 
         if st.button("Fechar detalhes"):
             st.session_state["selected_game"] = None
-            st.experimental_rerun()
 
 # ---------------- FOOTER ----------------
 st.markdown("<hr><p style='text-align:center; color:gray;'>Powered by RAWG API | Projeto pessoal</p>", unsafe_allow_html=True)
